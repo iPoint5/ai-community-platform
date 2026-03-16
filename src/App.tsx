@@ -128,7 +128,12 @@ const Sidebar = ({ activeTab, setActiveTab, seedInitialData }: { activeTab: stri
   );
 };
 
-const TopicCard = ({ topic, onClick }: { topic: Topic, onClick: () => void, key?: React.Key }) => (
+interface TopicCardProps {
+  topic: Topic;
+  onClick: () => void;
+}
+
+const TopicCard: React.FC<TopicCardProps> = ({ topic, onClick }) => (
   <motion.div 
     layout
     initial={{ opacity: 0, y: 10 }}
@@ -170,7 +175,11 @@ const TopicCard = ({ topic, onClick }: { topic: Topic, onClick: () => void, key?
   </motion.div>
 );
 
-const ProjectCard = ({ project }: { project: Project, key?: React.Key }) => (
+interface ProjectCardProps {
+  project: Project;
+}
+
+const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => (
   <div className="bg-white border border-black/5 p-6 rounded-2xl shadow-sm">
     <div className="flex justify-between items-start mb-4">
       <h3 className="font-bold text-lg">{project.name}</h3>
@@ -252,9 +261,17 @@ export default function App() {
   const handleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed", error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        alert("登录窗口被关闭，请重试。");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert("域名未授权。请在 Firebase 控制台添加当前域名到 Authorized Domains。");
+      } else {
+        alert("登录失败: " + (error.message || "未知错误"));
+      }
     }
   };
 
