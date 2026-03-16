@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "displayName": { "type": "string", "description": "User's display name" },
+        "email": { "type": "string", "description": "User's email" },
+        "photoURL": { "type": "string", "description": "User's avatar URL" },
+        "role": { "type": "string", "enum": ["industry_expert", "ai_developer", "admin"], "description": "User's role in the community" },
+        "bio": { "type": "string", "description": "User's biography" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation time" }
+      },
+      "required": ["uid", "displayName", "email", "role"]
+    },
+    "Topic": {
+      "title": "Topic",
+      "description": "A forum post representing a pain point or AI insight",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "authorName": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string", "enum": ["pain_point", "ai_insight"], "description": "Category of the topic" },
+        "industry": { "type": "string", "description": "Target industry (e.g., Manufacturing, Healthcare)" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "viewCount": { "type": "integer" },
+        "commentCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["authorUid", "title", "content", "type"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "A comment on a topic",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "topicId": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "authorName": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["topicId", "authorUid", "content"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "A collaboration project space",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "members": { "type": "array", "items": { "type": "string" }, "description": "List of member UIDs" },
+        "status": { "type": "string", "enum": ["planning", "active", "completed"] },
+        "relatedTopicId": { "type": "string", "description": "The topic that sparked this project" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "ownerUid", "members"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": { "schema": "User", "description": "User profiles" },
+    "/topics/{topicId}": { "schema": "Topic", "description": "Forum topics" },
+    "/topics/{topicId}/comments/{commentId}": { "schema": "Comment", "description": "Comments on topics" },
+    "/projects/{projectId}": { "schema": "Project", "description": "Collaboration projects" }
+  }
+}
